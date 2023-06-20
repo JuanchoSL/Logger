@@ -5,8 +5,6 @@ namespace JuanchoSL\EnvVars\Tests;
 use JuanchoSL\Logger\Debugger;
 use JuanchoSL\Logger\Logger;
 use PHPUnit\Framework\TestCase;
-use JuanchoSL\EnvVars\EnvVars;
-use JuanchoSL\Exceptions\NotFoundException;
 
 class ReadFileTest extends TestCase
 {

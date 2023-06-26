@@ -5,15 +5,37 @@ namespace JuanchoSL\Logger;
 class Debugger
 {
 
-    static private Logger $logger;
+    private static $loggers = [];
 
-    public static function init(Logger $logger)
+    public static function init(string $path)
     {
-        static::$logger = $logger;
+        if (!file_exists($path)) {
+            mkdir($path, 0666, true);
+        }
+        static::$loggers = [
+            'debug' => new Logger($path . DIRECTORY_SEPARATOR . 'debug.log'),
+            'error' => new Logger($path . DIRECTORY_SEPARATOR . 'errors.log'),
+            'info' => new Logger($path . DIRECTORY_SEPARATOR . 'access.log'),
+        ];
     }
 
     public static function __callStatic($method, $args)
     {
-        call_user_func_array([static::$logger, $method], $args);
+        $logger = (array_key_exists($method, static::$loggers)) ? static::$loggers[$method] : static::$loggers['error'];
+        call_user_func_array([$logger, $method], $args);
+    }
+
+    public static function exception(\Throwable $exception, array $context = []): void
+    {
+        $message = implode(PHP_EOL, [
+            implode(' ', [
+                $exception->getCode(),
+                $exception->getFile(),
+                $exception->getLine(),
+                $exception->getMessage()
+            ]),
+            $exception->getTraceAsString()
+        ]);
+        static::$loggers['error']->error($message, $context);
     }
 }

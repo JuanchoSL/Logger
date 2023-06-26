@@ -11,8 +11,8 @@ class Logger implements LoggerInterface
     public function __construct(string $path)
     {
         $this->full_path = $path;
-        if (!is_dir(pathinfo($this->full_path, PATHINFO_DIRNAME))) {
-            mkdir($this->full_path, 0666, true);
+        if (!is_dir($dir = pathinfo($this->full_path, PATHINFO_DIRNAME))) {
+            mkdir($dir, 0666, true);
         }
     }
     public function emergency(\Stringable|string $message, array $context = []): void

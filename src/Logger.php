@@ -8,15 +8,12 @@ use Psr\Log\LogLevel;
 class Logger implements LoggerInterface
 {
     private $full_path;
-    public function __construct(string $path, string $filename, bool $prepend_date = false)
+    public function __construct(string $path)
     {
-        if ($prepend_date) {
-            $filename = date("Y-m-d") . '-' . $filename;
+        $this->full_path = $path;
+        if (!is_dir(pathinfo($this->full_path, PATHINFO_DIRNAME))) {
+            mkdir($this->full_path, 0666, true);
         }
-        if (!file_exists($path)) {
-            mkdir($path);
-        }
-        $this->full_path = $path . DIRECTORY_SEPARATOR . $filename;
     }
     public function emergency(\Stringable|string $message, array $context = []): void
     {
@@ -53,6 +50,9 @@ class Logger implements LoggerInterface
     public function log($level, \Stringable|string $message, array $context = []): void
     {
         $string = date(DATE_ATOM) . " " . $level . " " . $message . PHP_EOL;
+        if (!empty($context)) {
+            $string .= PHP_EOL . json_encode($context, JSON_PRETTY_PRINT) . PHP_EOL;
+        }
         file_put_contents($this->full_path, $string, FILE_APPEND | LOCK_EX);
     }
 }

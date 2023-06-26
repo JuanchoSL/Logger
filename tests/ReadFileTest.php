@@ -13,7 +13,7 @@ class ReadFileTest extends TestCase
     {
         $logs_dir = realpath(dirname(__DIR__, 1)) . DIRECTORY_SEPARATOR . 'logs';
         $log_name = 'test_logger.log';
-        $logger = new Logger($logs_dir, $log_name, false);
+        $logger = new Logger($logs_dir . DIRECTORY_SEPARATOR . $log_name);
         $logger->warning('This is a warning');
         $this->assertDirectoryExists($logs_dir);
 
@@ -23,14 +23,15 @@ class ReadFileTest extends TestCase
     public function testDebuggerFile()
     {
         $logs_dir = realpath(dirname(__DIR__, 1)) . DIRECTORY_SEPARATOR . 'logs';
-        $log_name = 'test_debugger.log';
-        $logger = new Logger($logs_dir, $log_name, false);
 
-        Debugger::init($logger);
-        Debugger::warning('This is a warning');
+        Debugger::init($logs_dir);
+        Debugger::warning('This is a warning', $_SERVER);
         $this->assertDirectoryExists($logs_dir);
 
-        $deleted = unlink(implode(DIRECTORY_SEPARATOR, [$logs_dir, $log_name]));
+        foreach(glob($logs_dir.DIRECTORY_SEPARATOR.'*') as $file){
+            unlink($file);
+        }
+        $deleted = rmdir($logs_dir);
         $this->assertTrue($deleted);
     }
 

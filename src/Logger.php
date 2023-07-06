@@ -12,7 +12,7 @@ class Logger implements LoggerInterface
     {
         $this->full_path = $path;
         if (!is_dir($dir = pathinfo($this->full_path, PATHINFO_DIRNAME))) {
-            mkdir($dir, 0666, true);
+            mkdir($dir, 0777, true);
         }
     }
     public function emergency(\Stringable|string $message, array $context = []): void

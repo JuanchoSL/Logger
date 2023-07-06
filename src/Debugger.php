@@ -10,7 +10,7 @@ class Debugger
     public static function init(string $path)
     {
         if (!file_exists($path)) {
-            mkdir($path, 0666, true);
+            mkdir($path, 0777, true);
         }
         static::$loggers = [
             'debug' => new Logger($path . DIRECTORY_SEPARATOR . 'debug.log'),

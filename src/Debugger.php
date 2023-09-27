@@ -30,9 +30,12 @@ class Debugger
         $message = implode(PHP_EOL, [
             implode(' ', [
                 $exception->getCode(),
+                $exception->getMessage(),
+            ]),
+            implode(' ', [
+                'Origin: ',
                 $exception->getFile(),
-                $exception->getLine(),
-                $exception->getMessage()
+                '(' . $exception->getLine() . ')',
             ]),
             $exception->getTraceAsString()
         ]);

@@ -11,7 +11,7 @@ class ReadFileTest extends TestCase
 
     public function testLoggerFile()
     {
-        $logs_dir = realpath(dirname(__DIR__, 1)) . DIRECTORY_SEPARATOR . 'logs';
+        $logs_dir = realpath(sys_get_temp_dir()) . DIRECTORY_SEPARATOR . 'logs';
         $log_name = 'test_logger.log';
         $logger = new Logger($logs_dir . DIRECTORY_SEPARATOR . $log_name);
         $logger->warning('This is a warning');
@@ -22,7 +22,7 @@ class ReadFileTest extends TestCase
     }
     public function testDebuggerFile()
     {
-        $logs_dir = realpath(dirname(__DIR__, 1)) . DIRECTORY_SEPARATOR . 'logs';
+        $logs_dir = realpath(sys_get_temp_dir()) . DIRECTORY_SEPARATOR . 'logs';
 
         Debugger::init($logs_dir);
         Debugger::warning('This is a warning', $_SERVER);

@@ -10,7 +10,7 @@ class Debugger
     public static function init(string $path)
     {
         if (!file_exists($path)) {
-            mkdir($path, 0666, true);
+            mkdir($path, 0777, true);
         }
         static::$loggers = [
             'debug' => new Logger($path . DIRECTORY_SEPARATOR . 'debug.log'),
@@ -30,9 +30,12 @@ class Debugger
         $message = implode(PHP_EOL, [
             implode(' ', [
                 $exception->getCode(),
+                $exception->getMessage(),
+            ]),
+            implode(' ', [
+                'Origin: ',
                 $exception->getFile(),
-                $exception->getLine(),
-                $exception->getMessage()
+                '(' . $exception->getLine() . ')',
             ]),
             $exception->getTraceAsString()
         ]);

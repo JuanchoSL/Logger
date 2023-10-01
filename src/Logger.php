@@ -49,9 +49,9 @@ class Logger implements LoggerInterface
     }
     public function log($level, \Stringable|string $message, array $context = []): void
     {
-        $string = date(DATE_ATOM) . " [" . $level . "]: " . $message . PHP_EOL;
+        $string = date(DATE_ATOM) . " [" . $level . "]: " . $message;
         if (!empty($context)) {
-            $string .= json_encode($context, JSON_PRETTY_PRINT) . PHP_EOL;
+            $string .= PHP_EOL .json_encode($context, JSON_PRETTY_PRINT);
         }
         file_put_contents($this->full_path, $string . PHP_EOL, FILE_APPEND | LOCK_EX);
     }

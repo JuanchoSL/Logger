@@ -24,6 +24,7 @@ class ReadFileTest extends TestCase
     public function testDebuggerFile()
     {
         $logs_dir = Debugger::initPaths();
+        $this->assertFileNotExists($logs_dir . DIRECTORY_SEPARATOR . 'access.log');
         Debugger::info('This is a info', $_SERVER);
         $this->assertDirectoryExists($logs_dir);
         $this->assertFileExists($logs_dir . DIRECTORY_SEPARATOR . 'access.log');
@@ -40,6 +41,7 @@ class ReadFileTest extends TestCase
     {
         Debugger::initPaths();
         $logs_dir = Debugger::initErrorHandler();
+        $this->assertFileNotExists($logs_dir . DIRECTORY_SEPARATOR . 'debug.log');
         trigger_error("This is a trigger");
         $this->assertDirectoryExists($logs_dir);
         $this->assertFileExists($logs_dir . DIRECTORY_SEPARATOR . 'debug.log');
@@ -54,6 +56,7 @@ class ReadFileTest extends TestCase
     {
         Debugger::initPaths();
         $logs_dir = Debugger::initErrorHandler();
+        $this->assertFileNotExists($logs_dir . DIRECTORY_SEPARATOR . 'errors.log');
         trigger_error("This is a trigger", E_USER_ERROR);
         $this->assertDirectoryExists($logs_dir);
         $this->assertFileExists($logs_dir . DIRECTORY_SEPARATOR . 'errors.log');

@@ -4,68 +4,127 @@ declare(strict_types=1);
 
 namespace JuanchoSL\Logger;
 
+use ErrorException;
+use Psr\Log\LoggerInterface;
+
 class Debugger
 {
 
-    private static array $loggers = [];
-    private static $path;
+    private array $loggers = [];
 
-    public static function init(string $path, $error_levels = E_ALL): string
+    private string $path;
+
+    private static Debugger $instance;
+
+    private string $error_log_alias;
+
+    protected function __construct(string $path)
     {
-        self::initPaths($path);
-        self::initExceptionHandler();
-        self::initErrorHandler($error_levels);
-        return self::$path;
+        $this->path = $path;
     }
 
-    public static function initPaths(string $path = null): string
+    public function getLogger(string $alias): ?LoggerInterface
     {
-        if (is_null($path)) {
-            $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'logs';
-        }
-        if (!file_exists($path)) {
-            mkdir($path, 0777, true);
-        }
-        self::$loggers = [
-            'debug' => new Logger($path . DIRECTORY_SEPARATOR . 'debug.log'),
-            'error' => new Logger($path . DIRECTORY_SEPARATOR . 'errors.log'),
-            'info' => new Logger($path . DIRECTORY_SEPARATOR . 'access.log'),
-        ];
-        return self::$path = $path;
+        return array_key_exists($alias, $this->loggers) ? $this->loggers[$alias] : null;
     }
 
-    public static function initExceptionHandler(): string
+    public function setLogger(string $alias, ?LoggerInterface $logger = null): self
     {
-        if (empty(self::$loggers)) {
-            self::initPaths();
+        if (empty($logger)) {
+            $logger = new Logger($this->path . DIRECTORY_SEPARATOR . $alias . '.log');
         }
+        $this->loggers[$alias] = $logger;
+        return $this;
+    }
+
+    public function initExceptionHandler(string $error_log_alias): self
+    {
+        if (!array_key_exists($error_log_alias, $this->loggers)) {
+            $this->setLogger($error_log_alias);
+        }
+        $this->error_log_alias = $error_log_alias;
         set_exception_handler([Debugger::class, 'handlerException']);
-        return self::$path;
+        return $this;
     }
 
-    public static function initErrorHandler($error_levels = E_ALL): string
+    public function initErrorHandler(string $error_log_alias, $error_levels = E_ALL): self
     {
-        if (empty(self::$loggers)) {
-            self::initPaths();
+        if (!array_key_exists($error_log_alias, $this->loggers)) {
+            $this->setLogger($error_log_alias);
         }
+        $this->error_log_alias = $error_log_alias;
+        error_reporting($error_levels);
         set_error_handler([Debugger::class, 'handlerError'], $error_levels);
-        return self::$path;
+        return $this;
     }
 
-    public static function __callStatic(string $method, array $args)
+    public static function getInstance(string $path = null): Debugger
     {
-        $logger = (array_key_exists($method, self::$loggers)) ? self::$loggers[$method] : self::$loggers['error'];
-        call_user_func_array([$logger, $method], $args);
+        if (empty(self::$instance)) {
+            if (is_null($path)) {
+                $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'logs';
+            }
+            self::$instance = new Debugger($path);
+        }
+        return self::$instance;
     }
+    /*
+        public static function init(string $path, $error_levels = E_ALL): string
+        {
+            self::initPaths($path);
+            self::initExceptionHandler();
+            self::initErrorHandler($error_levels);
+            return self::$path;
+        }
 
+        public static function initPaths(string $path = null): string
+        {
+            if (is_null($path)) {
+                $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'logs';
+            }
+            self::$path = $path;
+            foreach (['debug', 'info', 'error'] as $alias) {
+                self::addLogger($alias);
+            }
+            return self::$path;
+        }
+
+        public static function addLogger(string $alias)
+        {
+            $fullpath = self::$path . DIRECTORY_SEPARATOR . $alias . '.log';
+            self::$loggers[$alias] = self::getLoggerInstance($fullpath);
+        }
+
+        protected static function getLoggerInstance(string $fullpath): LoggerInterface
+        {
+            return new Logger($fullpath);
+        }
+
+        public static function __callStatic(string $method, array $args)
+        {
+            $logger = (array_key_exists($method, self::$loggers)) ? self::$loggers[$method] : self::$loggers['error'];
+            call_user_func_array([$logger, $method], $args);
+        }
+    */
     public static function handlerException(\Throwable $exception, array $context = []): void
     {
-        $message = self::createMessage($exception->getCode(), $exception->getMessage(), $exception->getFile(), $exception->getLine(), $exception->getTraceAsString());
-        self::$loggers['error']->error($message, $context);
+        $message = self::createMessage($exception->getCode(), $exception->getMessage(), $exception->getFile(), $exception->getLine());
+        $context['exception'] = $exception;
+        $logger = self::getInstance();
+        $logger->getLogger($logger->error_log_alias)->error($message, $context);
+        //self::$loggers['error']->error($message, $context);
     }
 
     public static function handlerError(int $errno, string $errstr, string $errfile, int $errline, array $context = [])
     {
+        //if (0 === error_reporting()) { return false;}
+        if (!(error_reporting() & $errno)) {
+            return false;
+        }
+        $error = new ErrorException($errstr, $errno, $errno, $errfile, $errline);
+        self::handlerException($error, $context);
+        return true;
+        /*  
         $array_trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         $array_trace = array_slice($array_trace, 2);
         $index = 0;
@@ -110,22 +169,26 @@ class Debugger
                 self::$loggers['error']->error($message, $context);
                 break;
         }
+        */
     }
 
-    protected static function createMessage(int $errno, string $errstr, string $errfile, int $errline, string $trace)
+    protected static function createMessage(int $errno, string $errstr, string $errfile, int $errline, string $trace = '')
     {
-        return implode(PHP_EOL, [
+        $return = implode(PHP_EOL, [
             implode(' ', [
-                $errno,
+                $errno . ":",
                 $errstr,
             ]),
             implode(' ', [
-                'Origin: ',
+                'Origin:',
                 $errfile,
                 '(' . $errline . ')',
-            ]),
-            $trace
+            ])
         ]);
+        if (!empty($trace)) {
+            $return .= PHP_EOL . $trace;
+        }
+        return $return;
     }
     public static function testException()
     {

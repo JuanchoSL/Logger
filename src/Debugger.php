@@ -68,51 +68,13 @@ class Debugger
         }
         return self::$instance;
     }
-    /*
-        public static function init(string $path, $error_levels = E_ALL): string
-        {
-            self::initPaths($path);
-            self::initExceptionHandler();
-            self::initErrorHandler($error_levels);
-            return self::$path;
-        }
-
-        public static function initPaths(string $path = null): string
-        {
-            if (is_null($path)) {
-                $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'logs';
-            }
-            self::$path = $path;
-            foreach (['debug', 'info', 'error'] as $alias) {
-                self::addLogger($alias);
-            }
-            return self::$path;
-        }
-
-        public static function addLogger(string $alias)
-        {
-            $fullpath = self::$path . DIRECTORY_SEPARATOR . $alias . '.log';
-            self::$loggers[$alias] = self::getLoggerInstance($fullpath);
-        }
-
-        protected static function getLoggerInstance(string $fullpath): LoggerInterface
-        {
-            return new Logger($fullpath);
-        }
-
-        public static function __callStatic(string $method, array $args)
-        {
-            $logger = (array_key_exists($method, self::$loggers)) ? self::$loggers[$method] : self::$loggers['error'];
-            call_user_func_array([$logger, $method], $args);
-        }
-    */
+    
     public static function handlerException(\Throwable $exception, array $context = []): void
     {
         $message = self::createMessage($exception->getCode(), $exception->getMessage(), $exception->getFile(), $exception->getLine());
         $context['exception'] = $exception;
         $logger = self::getInstance();
         $logger->getLogger($logger->error_log_alias)->error($message, $context);
-        //self::$loggers['error']->error($message, $context);
     }
 
     public static function handlerError(int $errno, string $errstr, string $errfile, int $errline, array $context = [])

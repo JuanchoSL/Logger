@@ -23,7 +23,7 @@ class Logger extends AbstractLogger
         if (!empty($context)) {
             $trace = '';
             if (array_key_exists('exception', $context) && $context['exception'] instanceof \Throwable) {
-                $trace = PHP_EOL . $context['exception']->getTraceAsString();
+                $trace = PHP_EOL . $context['exception']->getTraceAsString() . PHP_EOL;
                 unset($context['exception']);
             }
             foreach ($context as $key => $value) {
@@ -37,7 +37,7 @@ class Logger extends AbstractLogger
         $string .= $message;
 
         if (!empty($context)) {
-            $string .= PHP_EOL . json_encode($context, JSON_PRETTY_PRINT);
+            $string .= PHP_EOL . json_encode($context, JSON_PRETTY_PRINT) . PHP_EOL;
         }
 
         file_put_contents($this->full_path, $string . PHP_EOL, FILE_APPEND | LOCK_EX);

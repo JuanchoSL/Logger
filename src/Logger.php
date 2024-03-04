@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JuanchoSL\Logger;
 
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
+use Psr\Log\AbstractLogger;
 
-class Logger implements LoggerInterface
+class Logger extends AbstractLogger
 {
     private $full_path;
     public function __construct(string $path)
@@ -15,44 +16,30 @@ class Logger implements LoggerInterface
             mkdir($dir, 0777, true);
         }
     }
-    public function emergency(\Stringable|string $message, array $context = []): void
-    {
-        $this->log(LogLevel::EMERGENCY, $message, $context);
-    }
-    public function alert(\Stringable|string $message, array $context = []): void
-    {
-        $this->log(LogLevel::ALERT, $message, $context);
-    }
-    public function critical(\Stringable|string $message, array $context = []): void
-    {
-        $this->log(LogLevel::CRITICAL, $message, $context);
-    }
-    public function error(\Stringable|string $message, array $context = []): void
-    {
-        $this->log(LogLevel::ERROR, $message, $context);
-    }
-    public function warning(\Stringable|string $message, array $context = []): void
-    {
-        $this->log(LogLevel::WARNING, $message, $context);
-    }
-    public function notice(\Stringable|string $message, array $context = []): void
-    {
-        $this->log(LogLevel::NOTICE, $message, $context);
-    }
-    public function debug(\Stringable|string $message, array $context = []): void
-    {
-        $this->log(LogLevel::DEBUG, $message, $context);
-    }
-    public function info(\Stringable|string $message, array $context = []): void
-    {
-        $this->log(LogLevel::INFO, $message, $context);
-    }
     public function log($level, \Stringable|string $message, array $context = []): void
     {
-        $string = date(DATE_ATOM) . " [" . $level . "]: " . $message;
+        $string = "[" . date(DATE_RFC2822) . " " . date_default_timezone_get() . "] [" . $level . "] ";
+        $message = (string) $message;
         if (!empty($context)) {
-            $string .= PHP_EOL .json_encode($context, JSON_PRETTY_PRINT);
+            $trace = '';
+            if (array_key_exists('exception', $context) && $context['exception'] instanceof \Throwable) {
+                $trace = PHP_EOL . $context['exception']->getTraceAsString() . PHP_EOL;
+                unset($context['exception']);
+            }
+            foreach ($context as $key => $value) {
+                if (strpos($message, "{" . $key . "}") !== false) {
+                    $message = str_replace("{" . $key . "}", (string) $value, $message);
+                    unset($context[$key]);
+                }
+            }
+            $message .= $trace;
         }
+        $string .= $message;
+
+        if (!empty($context)) {
+            $string .= PHP_EOL . json_encode($context, JSON_PRETTY_PRINT) . PHP_EOL;
+        }
+
         file_put_contents($this->full_path, $string . PHP_EOL, FILE_APPEND | LOCK_EX);
     }
 }

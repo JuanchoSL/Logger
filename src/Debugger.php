@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace JuanchoSL\Logger;
 
 use ErrorException;
+use JuanchoSL\Logger\Contracts\HandlerInterface;
+use JuanchoSL\Logger\Factories\MessageFactory;
 use Psr\Log\LoggerInterface;
 
 class Debugger
@@ -60,7 +62,7 @@ class Debugger
 
     public static function getInstance(string $path = null): Debugger
     {
-        if (empty(self::$instance)) {
+        if (empty(self::$instance) || !is_null($path)) {
             if (is_null($path)) {
                 $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'logs';
             }
@@ -68,10 +70,11 @@ class Debugger
         }
         return self::$instance;
     }
-    
+
     public static function handlerException(\Throwable $exception, array $context = []): void
     {
-        $message = self::createMessage($exception->getCode(), $exception->getMessage(), $exception->getFile(), $exception->getLine());
+        //$message = self::createMessage($exception->getCode(), $exception->getMessage(), $exception->getFile(), $exception->getLine());
+        $message = MessageFactory::make($exception);
         $context['exception'] = $exception;
         $logger = self::getInstance();
         $logger->getLogger($logger->error_log_alias)->error($message, $context);
@@ -79,79 +82,14 @@ class Debugger
 
     public static function handlerError(int $errno, string $errstr, string $errfile, int $errline, array $context = [])
     {
-        //if (0 === error_reporting()) { return false;}
         if (!(error_reporting() & $errno)) {
             return false;
         }
         $error = new ErrorException($errstr, $errno, $errno, $errfile, $errline);
         self::handlerException($error, $context);
         return true;
-        /*  
-        $array_trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-        $array_trace = array_slice($array_trace, 2);
-        $index = 0;
-        foreach ($array_trace as $values) {
-            $trace_str = "#{$index} ";
-            if (array_key_exists('file', $values)) {
-                $trace_str .= $values['file'];
-            }
-            if (array_key_exists('line', $values)) {
-                $trace_str .= '(' . $values['line'] . ')';
-            }
-            $trace_str .= ": ";
-            if (array_key_exists('class', $values)) {
-                $trace_str .= $values['class'];
-            }
-            if (array_key_exists('type', $values)) {
-                $trace_str .= $values['type'];
-            }
-            if (array_key_exists('function', $values)) {
-                $trace_str .= $values['function'] . '()';
-            }
-            $trace[] = $trace_str;
-            $index++;
-        }
-        $trace[] = "#{$index} {main}";
-        $message = self::createMessage($errno, $errstr, $errfile, $errline, implode(PHP_EOL, $trace));
-        switch ($errno) {
-            case E_USER_DEPRECATED:
-            case E_USER_NOTICE:
-            case E_DEPRECATED:
-            case E_NOTICE:
-            //self::$loggers['info']->error($message, $context);
-            //break;
-
-            case E_USER_WARNING:
-            case E_WARNING:
-                self::$loggers['debug']->error($message, $context);
-                break;
-
-            case E_USER_ERROR:
-            default:
-                self::$loggers['error']->error($message, $context);
-                break;
-        }
-        */
     }
 
-    protected static function createMessage(int $errno, string $errstr, string $errfile, int $errline, string $trace = '')
-    {
-        $return = implode(PHP_EOL, [
-            implode(' ', [
-                $errno . ":",
-                $errstr,
-            ]),
-            implode(' ', [
-                'Origin:',
-                $errfile,
-                '(' . $errline . ')',
-            ])
-        ]);
-        if (!empty($trace)) {
-            $return .= PHP_EOL . $trace;
-        }
-        return $return;
-    }
     public static function testException()
     {
         throw new \Exception("This is a class exception", 400);

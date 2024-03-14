@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace JuanchoSL\Logger\Handlers;
 
 use JuanchoSL\Logger\Contracts\HandlerInterface;
+use JuanchoSL\Logger\Factories\MessageFactory;
 
 abstract class AbstractHandler implements HandlerInterface
 {
 
     protected int $timestamp;
     protected string $timeformat;
-    protected string $message;
+    protected \Stringable|string $message;
     protected string $level;
     protected array $context = [];
 
@@ -47,6 +48,12 @@ abstract class AbstractHandler implements HandlerInterface
 
     protected function parseMessage(): string
     {
+        if ($this->message instanceof \Throwable) {
+            if (!array_key_exists('exception', $this->context)) {
+                $this->context['exception'] = $this->message;
+            }
+            $this->message = MessageFactory::make($this->message);
+        }
         $message = (string) $this->message;
         foreach ($this->context as $key => $value) {
             if (strpos($message, "{" . $key . "}") !== false) {

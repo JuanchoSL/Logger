@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace JuanchoSL\Logger;
 
 use ErrorException;
-use JuanchoSL\Logger\Contracts\HandlerInterface;
-use JuanchoSL\Logger\Factories\MessageFactory;
 use Psr\Log\LoggerInterface;
 
 class Debugger
@@ -74,10 +72,10 @@ class Debugger
     public static function handlerException(\Throwable $exception, array $context = []): void
     {
         //$message = self::createMessage($exception->getCode(), $exception->getMessage(), $exception->getFile(), $exception->getLine());
-        $message = MessageFactory::make($exception);
+        //$message = MessageFactory::make($exception);
         $context['exception'] = $exception;
         $logger = self::getInstance();
-        $logger->getLogger($logger->error_log_alias)->error($message, $context);
+        $logger->getLogger($logger->error_log_alias)->error($exception, $context);
     }
 
     public static function handlerError(int $errno, string $errstr, string $errfile, int $errline, array $context = [])

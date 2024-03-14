@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace JuanchoSL\Logger\Factories;
 
-class MessageFactory
+class MessageFactory implements \Stringable
 {
     private \Throwable $message;
     public static function make(\Throwable $exception): MessageFactory
@@ -17,7 +17,7 @@ class MessageFactory
         $this->message = $throwable;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return implode(PHP_EOL, [
             implode(' ', [

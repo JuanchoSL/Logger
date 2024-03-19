@@ -9,7 +9,9 @@ use Psr\Log\LoggerInterface;
 
 class Debugger
 {
-
+    /**
+     * @var array<string, LoggerInterface> $loggers
+     */
     private array $loggers = [];
 
     private string $path;
@@ -30,7 +32,7 @@ class Debugger
 
     public function setLogger(string $alias, ?LoggerInterface $logger = null): self
     {
-        if (empty($logger)) {
+        if (empty ($logger)) {
             $logger = new Logger($this->path . DIRECTORY_SEPARATOR . $alias . '.log');
         }
         $this->loggers[$alias] = $logger;
@@ -47,7 +49,7 @@ class Debugger
         return $this;
     }
 
-    public function initErrorHandler(string $error_log_alias, $error_levels = E_ALL): self
+    public function initErrorHandler(string $error_log_alias, int $error_levels = E_ALL): self
     {
         if (!array_key_exists($error_log_alias, $this->loggers)) {
             $this->setLogger($error_log_alias);
@@ -60,7 +62,7 @@ class Debugger
 
     public static function getInstance(string $path = null): Debugger
     {
-        if (empty(self::$instance) || !is_null($path)) {
+        if (empty (self::$instance) || !is_null($path)) {
             if (is_null($path)) {
                 $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'logs';
             }
@@ -69,16 +71,22 @@ class Debugger
         return self::$instance;
     }
 
+    /**
+     * @param array<string,mixed> $context
+     */
     public static function handlerException(\Throwable $exception, array $context = []): void
     {
         //$message = self::createMessage($exception->getCode(), $exception->getMessage(), $exception->getFile(), $exception->getLine());
         //$message = MessageFactory::make($exception);
         $context['exception'] = $exception;
         $logger = self::getInstance();
-        $logger->getLogger($logger->error_log_alias)->error($exception, $context);
+        $logger->getLogger($logger->error_log_alias)?->error($exception, $context);
     }
 
-    public static function handlerError(int $errno, string $errstr, string $errfile, int $errline, array $context = [])
+    /**
+     * @param array<string,mixed> $context
+     */
+    public static function handlerError(int $errno, string $errstr, string $errfile, int $errline, array $context = []): bool
     {
         if (!(error_reporting() & $errno)) {
             return false;
@@ -88,11 +96,11 @@ class Debugger
         return true;
     }
 
-    public static function testException()
+    public static function testException(): void
     {
         throw new \Exception("This is a class exception", 400);
     }
-    public static function testError()
+    public static function testError(): void
     {
         trigger_error("This is a class tigger", E_USER_ERROR);
     }

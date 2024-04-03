@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace JuanchoSL\Logger;
 
 use ErrorException;
+use JuanchoSL\Logger\Composers\PlainText;
+use JuanchoSL\Logger\Repositories\FileRepository;
 use Psr\Log\LoggerInterface;
 
 class Debugger
@@ -30,16 +32,16 @@ class Debugger
         return array_key_exists($alias, $this->loggers) ? $this->loggers[$alias] : null;
     }
 
-    public function setLogger(string $alias, ?LoggerInterface $logger = null): self
+    public function setLogger(string $alias, ?LoggerInterface $logger = null): static
     {
-        if (empty ($logger)) {
-            $logger = new Logger($this->path . DIRECTORY_SEPARATOR . $alias . '.log');
+        if (empty($logger)) {
+            $logger = new Logger((new FileRepository($this->path . DIRECTORY_SEPARATOR . $alias . '.log'))->setComposer(new PlainText));
         }
         $this->loggers[$alias] = $logger;
         return $this;
     }
 
-    public function initExceptionHandler(string $error_log_alias): self
+    public function initExceptionHandler(string $error_log_alias): static
     {
         if (!array_key_exists($error_log_alias, $this->loggers)) {
             $this->setLogger($error_log_alias);
@@ -49,7 +51,7 @@ class Debugger
         return $this;
     }
 
-    public function initErrorHandler(string $error_log_alias, int $error_levels = E_ALL): self
+    public function initErrorHandler(string $error_log_alias, int $error_levels = E_ALL): static
     {
         if (!array_key_exists($error_log_alias, $this->loggers)) {
             $this->setLogger($error_log_alias);
@@ -62,7 +64,7 @@ class Debugger
 
     public static function getInstance(string $path = null): Debugger
     {
-        if (empty (self::$instance) || !is_null($path)) {
+        if (empty(self::$instance) || !is_null($path)) {
             if (is_null($path)) {
                 $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'logs';
             }
@@ -76,8 +78,6 @@ class Debugger
      */
     public static function handlerException(\Throwable $exception, array $context = []): void
     {
-        //$message = self::createMessage($exception->getCode(), $exception->getMessage(), $exception->getFile(), $exception->getLine());
-        //$message = MessageFactory::make($exception);
         $context['exception'] = $exception;
         $logger = self::getInstance();
         $logger->getLogger($logger->error_log_alias)?->error($exception, $context);

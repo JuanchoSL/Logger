@@ -26,10 +26,10 @@ class ReadFileRepositoryTest extends TestCase
         $this->assertDirectoryDoesNotExist($this->logs_dir);
         $this->assertFileDoesNotExist($this->full_path);
         $composer = new PlainText;
+        $composer->setTimeFormat(DATE_RFC2822);
         $handler = new FileRepository($this->full_path);
         //$handler = new ScreenRepository();
         $handler->setComposer($composer);
-        $handler->setTimeFormat(DATE_RFC2822);
         $this->logger = new Logger($handler);
     }
     public function tearDown(): void

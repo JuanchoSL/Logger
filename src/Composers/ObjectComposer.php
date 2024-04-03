@@ -19,7 +19,7 @@ class ObjectComposer extends AbstractComposer
         $object->trace = [];
         $object->context = [];
 
-        $object->time = $this->time_mark;
+        $object->time = $this->time_mark->format($this->timeformat);
         $object->level = $this->level;
         $object->message = $this->message;
         if ($this->exception instanceof \Throwable) {

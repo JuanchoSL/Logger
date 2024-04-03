@@ -17,7 +17,7 @@ class PlainText extends AbstractComposer
             $message = $this->message;
         }
 
-        $string = "[" . $this->time_mark . "] [" . $this->level . "] " . $message;
+        $string = "[" . $this->time_mark->format($this->timeformat) . "] [" . $this->level . "] " . $message;
         if (!empty ($this->context)) {
             $string .= PHP_EOL . json_encode($this->context, JSON_PRETTY_PRINT);
         }

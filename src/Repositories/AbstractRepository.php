@@ -10,25 +10,23 @@ use JuanchoSL\Logger\Contracts\LogRepositoryInterface;
 abstract class AbstractRepository implements LogRepositoryInterface
 {
 
-    protected string $timeformat = DATE_ATOM;
-
     protected LogComposerInterface $composer;
 
-    /**
-     * @var array<string,mixed> $context
-     */
-    protected array $context = [];
-
-    public function setComposer(LogComposerInterface $composer): self
+    public function setComposer(LogComposerInterface $composer): static
     {
         $this->composer = $composer;
         return $this;
     }
 
-    public function setTimeFormat(string $timeformat): self
+        /**
+     * @param string $level The message level
+     * @param \Stringable|string $message The message
+     * @param array<string,mixed> $context The context
+     * @return mixed The compose result
+     */
+    protected function getComposed(string $level, \Stringable|string $message, array $context = []): mixed
     {
-        $this->timeformat = $timeformat;
-        return $this;
+        $time = new \DateTimeImmutable('now', new \DateTimeZone(date_default_timezone_get()));
+        return $this->composer->setData($time, $level, $message, $context)->compose();
     }
-
 }

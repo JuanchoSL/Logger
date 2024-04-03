@@ -19,7 +19,7 @@ class ArrayComposer extends AbstractComposer
             'trace' => [],
             'context' => [],
         ];
-        $array['time'] = $this->time_mark;
+        $array['time'] = $this->time_mark->format($this->timeformat);
         $array['level'] = $this->level;
         $array['message'] = $this->message;
         if ($this->exception instanceof \Throwable) {

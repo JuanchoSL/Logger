@@ -20,9 +20,9 @@ class ReadScreenObjectTest extends TestCase
     public function setUp(): void
     {
         $composer = new ObjectComposer;
+        $composer->setTimeFormat(DATE_RFC2822);
         $handler = new ScreenRepository();
         $handler->setComposer($composer);
-        $handler->setTimeFormat(DATE_RFC2822);
         $this->logger = new Logger($handler);
         ob_start();
     }

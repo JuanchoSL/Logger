@@ -9,7 +9,9 @@ use JuanchoSL\Logger\Contracts\LogComposerInterface;
 abstract class AbstractComposer implements LogComposerInterface
 {
 
-    protected string $time_mark;
+    protected \DateTimeInterface $time_mark;
+    protected string $timeformat = DATE_ATOM;
+
     protected string $level
     ;
 
@@ -18,12 +20,12 @@ abstract class AbstractComposer implements LogComposerInterface
     protected ?\Throwable $exception;
 
     /**
-     * @var array<string,mixed> $context
+     * @var array<string,mixed|\Throwable> $context
      */
     protected array $context = [];
 
 
-    public function setData(string $time_mark, string $level, \Stringable|string $message, array $context = []): static
+    public function setData(\DateTimeInterface $time_mark, string $level, \Stringable|string $message, array $context = []): LogComposerInterface
     {
         $this->time_mark = $time_mark;
         $this->level = $level;
@@ -34,7 +36,7 @@ abstract class AbstractComposer implements LogComposerInterface
             $this->context['exception'] = $this->message;
             $this->message = $this->message->getMessage();
         }
-        if (array_key_exists('exception', $this->context)) {
+        if (array_key_exists('exception', $this->context) && $this->context['exception'] instanceof \Throwable) {
             $this->exception = $this->context['exception'];
             unset($this->context['exception']);
         } else {
@@ -47,6 +49,12 @@ abstract class AbstractComposer implements LogComposerInterface
                 unset($this->context[$key]);
             }
         }
+        return $this;
+    }
+
+    public function setTimeFormat(string $timeformat): static
+    {
+        $this->timeformat = $timeformat;
         return $this;
     }
 }

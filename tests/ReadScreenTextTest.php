@@ -20,9 +20,9 @@ class ReadScreenTextTest extends TestCase
     public function setUp(): void
     {
         $composer = new PlainText;
+        $composer->setTimeFormat("Y-m-d H:i:s T");
         $handler = new ScreenRepository();
         $handler->setComposer($composer);
-        $handler->setTimeFormat(DATE_RFC2822);
         $this->logger = new Logger($handler);
         ob_start();
     }

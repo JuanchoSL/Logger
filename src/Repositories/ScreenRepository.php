@@ -9,8 +9,7 @@ class ScreenRepository extends AbstractRepository
 
     public function save(string $level, \Stringable|string $message, array $context = []): bool
     {
-        $time = date($this->timeformat) . " " . date_default_timezone_get();
-        $result = $this->composer->setData($time, $level, $message, $context)->compose();
+        $result = $this->getComposed($level, $message, $context);
         if (is_array($result)) {
             print_r($result);
         } elseif (is_object($result)) {

@@ -44,7 +44,7 @@ abstract class AbstractComposer implements LogComposerInterface
         }
         $this->message = (string) $this->message;
         foreach ($this->context as $key => $value) {
-            if (strpos($this->message, "{" . $key . "}") !== false && is_scalar($value)) {
+            if (strpos($this->message, "{" . $key . "}") !== false && (is_scalar($value) || $value instanceof \Stringable)) {
                 $this->message = str_replace("{" . $key . "}", (string) $value, $this->message);
                 unset($this->context[$key]);
             }

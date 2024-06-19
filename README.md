@@ -9,23 +9,23 @@ Little adapter to save log data using PSR3
 ### First steps
 
 #### Create or use provided Data Composers, you can convert to String (for save into files) or can convert to Array or Objects in order to save into tables
-```
-$composer = new PlainText.php;
+```php
+$composer = new PlainText;
 ```
 #### Use a repository in order to put the composer
-```
+```php
 $repository = new FileRepository(PATH . DIRECTORY_SEPARATOR . 'error.log');
 $repository->setComposer($composer);
 ```
 
 ### Declare a Logger directly
-```
+```php
 $logger = new JuanchoSL\Logger\Logger($repository);
 $logger->error("This is a message error");
 ```
 
 ### Declare a Logger using the provided Debugger class
-```
+```php
 use JuanchoSL\Logger\Debugger;
 
 $debugger = Debugger::getInstance();
@@ -33,11 +33,11 @@ $debugger->setLogger('errors', $repository);
 
 //.... your code ...
 
-Debugger::getInstance()->getLogger('errors)->error("This is a message error");
+Debugger::getInstance()->getLogger('errors')->error("This is a message error");
 ```
 
 ### Declaring few Loggers in order to save separated data
-```
+```php
 use JuanchoSL\Logger\Debugger;
 
 $debugger = Debugger::getInstance(PATH);
@@ -51,7 +51,7 @@ Debugger::getInstance()->getLogger('database)->debug($sql);
 ```
 
 ### Initializing error or exception handlers
-```
+```php
 use JuanchoSL\Logger\Debugger;
 
 $debugger = Debugger::getInstance(PATH);
@@ -60,7 +60,7 @@ $debugger->initExceptionHandler('errors');
 ```
 
 ### Use declared Loggers for inject as dependecy into Libraries
-```
+```php
 use JuanchoSL\Logger\Debugger;
 use JuanchoSL\Orm\engine\Drivers\Mysqli;
 

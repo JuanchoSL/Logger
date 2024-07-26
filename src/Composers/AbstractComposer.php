@@ -10,10 +10,10 @@ abstract class AbstractComposer implements LogComposerInterface
 {
 
     protected \DateTimeInterface $time_mark;
+
     protected string $timeformat = DATE_ATOM;
 
-    protected string $level
-    ;
+    protected string $level;
 
     protected \Stringable|string $message;
 
@@ -25,9 +25,9 @@ abstract class AbstractComposer implements LogComposerInterface
     protected array $context = [];
 
 
-    public function setData(\DateTimeInterface $time_mark, string $level, \Stringable|string $message, array $context = []): LogComposerInterface
+    public function setData(string $level, \Stringable|string $message, array $context = []): LogComposerInterface
     {
-        $this->time_mark = $time_mark;
+        $this->time_mark = new \DateTimeImmutable('now', new \DateTimeZone(date_default_timezone_get()));;
         $this->level = $level;
         $this->message = $message;
         $this->context = $context;

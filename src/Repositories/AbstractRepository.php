@@ -26,7 +26,6 @@ abstract class AbstractRepository implements LogRepositoryInterface
      */
     protected function getComposed(string $level, \Stringable|string $message, array $context = []): mixed
     {
-        $time = new \DateTimeImmutable('now', new \DateTimeZone(date_default_timezone_get()));
-        return $this->composer->setData($time, $level, $message, $context)->compose();
+        return $this->composer->setData($level, $message, $context)->compose();
     }
 }

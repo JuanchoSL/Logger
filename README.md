@@ -46,8 +46,8 @@ $debugger->setLogger('database', (new ModelRepository())->setComposer(new Object
 
 //.... your code ...
 
-Debugger::getInstance()->getLogger('errors)->error("This is a message error");
-Debugger::getInstance()->getLogger('database)->debug($sql);
+Debugger::getInstance()->getLogger('errors')->error("This is a message error");
+Debugger::getInstance()->getLogger('database')->debug($sql);
 ```
 
 ### Initializing error or exception handlers

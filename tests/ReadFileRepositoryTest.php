@@ -62,7 +62,7 @@ class ReadFileRepositoryTest extends TestCase
     
     public function testTriggersDebugInit()
     {
-        $debugger = Debugger::getInstance()->setLogger('debug', $this->logger)->initErrorHandler('debug');
+        $debugger = Debugger::getInstance()->setLogger('debug', $this->logger)->initFailuresHandler('debug');
         trigger_error("This is a trigger");
         $this->assertDirectoryExists($this->logs_dir);
         $this->assertFileExists($this->full_path);
@@ -71,7 +71,7 @@ class ReadFileRepositoryTest extends TestCase
     }
     public function testTriggerErrorInit()
     {
-        $debugger = Debugger::getInstance()->setLogger('error', $this->logger)->initErrorHandler('error');
+        $debugger = Debugger::getInstance()->setLogger('error', $this->logger)->initFailuresHandler('error');
         $this->assertFileDoesNotExist($this->full_path);
         trigger_error("This is a trigger", E_USER_ERROR);
         $this->assertDirectoryExists($this->logs_dir);
@@ -82,7 +82,7 @@ class ReadFileRepositoryTest extends TestCase
     
     public function testTriggerWarningSupressed()
     {
-        $debugger = Debugger::getInstance()->setLogger('error', $this->logger)->initErrorHandler('error');
+        $debugger = Debugger::getInstance()->setLogger('error', $this->logger)->initFailuresHandler('error');
         $this->assertFileDoesNotExist($this->full_path);
         @trigger_error("This is a trigger", E_USER_WARNING);
         $this->assertDirectoryExists($this->logs_dir);
@@ -91,7 +91,7 @@ class ReadFileRepositoryTest extends TestCase
 
     public function testTriggerNoticeNotReported()
     {
-        $debugger = Debugger::getInstance()->setLogger('notice', $this->logger)->initErrorHandler('notice', E_ALL ^ E_USER_NOTICE);
+        $debugger = Debugger::getInstance()->setLogger('notice', $this->logger)->initFailuresHandler('notice', E_ALL ^ E_USER_NOTICE);
         $this->assertFileDoesNotExist($this->full_path);
         @trigger_error("This is a trigger", E_USER_NOTICE);
         $this->assertDirectoryExists($this->logs_dir);

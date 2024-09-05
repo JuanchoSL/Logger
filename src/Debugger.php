@@ -32,29 +32,36 @@ class Debugger
         return array_key_exists($alias, $this->loggers) ? $this->loggers[$alias] : null;
     }
 
-    public function setLogger(string $alias, ?LoggerInterface $logger = null): static
+    public function setLogger(string $alias, LoggerInterface $logger): static
     {
         if (empty($logger)) {
-            $logger = new Logger((new FileRepository($this->path . DIRECTORY_SEPARATOR . $alias . '.log'))->setComposer(new PlainText));
+            //$logger = new Logger((new FileRepository($this->path . DIRECTORY_SEPARATOR . $alias . '.log'))->setComposer(new PlainText));
         }
         $this->loggers[$alias] = $logger;
         return $this;
     }
 
-    public function initExceptionHandler(string $error_log_alias): static
+    public function initFailuresHandler(string $error_log_alias, int $error_levels = E_ALL): static
+    {
+        $this->initExceptionHandler($error_log_alias);
+        $this->initErrorHandler($error_log_alias, $error_levels);
+        return $this;
+    }
+
+    protected function initExceptionHandler(string $error_log_alias): static
     {
         if (!array_key_exists($error_log_alias, $this->loggers)) {
-            $this->setLogger($error_log_alias);
+            //$this->setLogger($error_log_alias);
         }
         $this->error_log_alias = $error_log_alias;
         set_exception_handler([Debugger::class, 'handlerException']);
         return $this;
     }
 
-    public function initErrorHandler(string $error_log_alias, int $error_levels = E_ALL): static
+    protected function initErrorHandler(string $error_log_alias, int $error_levels = E_ALL): static
     {
         if (!array_key_exists($error_log_alias, $this->loggers)) {
-            $this->setLogger($error_log_alias);
+            //$this->setLogger($error_log_alias);
         }
         $this->error_log_alias = $error_log_alias;
         error_reporting($error_levels);

@@ -38,21 +38,21 @@ class ReadScreenArrayTest extends TestCase
     }
     public function testDebuggerFile()
     {
-        $debugger = Debugger::getInstance()->setLogger('info', $this->logger)->getLogger('info')?->info('This is a info', $_SERVER);
+        $debugger = Debugger::init()->setLogger('info', $this->logger)->getLogger('info')?->info('This is a info', $_SERVER);
         $content = ob_get_clean();
         $this->assertStringContainsString("This is a info", $content);
     }
 
     public function testTriggersDebugInit()
     {
-        $debugger = Debugger::getInstance()->setLogger('debug', $this->logger)->initFailuresHandler('debug');
+        $debugger = Debugger::init()->setLogger('debug', $this->logger)->initFailuresHandler('debug');
         trigger_error("This is a trigger");
         $content = ob_get_clean();
         $this->assertStringContainsString("This is a trigger", $content);
     }
     public function testTriggerErrorInit()
     {
-        $debugger = Debugger::getInstance()->setLogger('error', $this->logger)->initFailuresHandler('error');
+        $debugger = Debugger::init()->setLogger('error', $this->logger)->initFailuresHandler('error');
         trigger_error("This is a trigger", E_USER_ERROR);
         $content = ob_get_clean();
         $this->assertStringContainsString("This is a trigger", $content);
@@ -60,7 +60,7 @@ class ReadScreenArrayTest extends TestCase
 
     public function testTriggerWarningSupressed()
     {
-        $debugger = Debugger::getInstance()->setLogger('error', $this->logger)->initFailuresHandler('error');
+        $debugger = Debugger::init()->setLogger('error', $this->logger)->initFailuresHandler('error');
         @trigger_error("This is a trigger", E_USER_WARNING);
         $content = ob_get_clean();
         $this->assertStringNotContainsString("This is a trigger", $content);
@@ -68,7 +68,7 @@ class ReadScreenArrayTest extends TestCase
 
     public function testTriggerNoticeNotReported()
     {
-        $debugger = Debugger::getInstance()->setLogger('notice', $this->logger)->initFailuresHandler('notice', E_ALL ^ E_USER_NOTICE);
+        $debugger = Debugger::init()->setLogger('notice', $this->logger)->initFailuresHandler('notice', E_ALL ^ E_USER_NOTICE);
         @trigger_error("This is a trigger", E_USER_NOTICE);
         $content = ob_get_clean();
         $this->assertStringNotContainsString("This is a trigger", $content);

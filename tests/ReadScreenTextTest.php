@@ -2,7 +2,7 @@
 
 namespace JuanchoSL\Logger\Tests;
 
-use JuanchoSL\Logger\Composers\PlainText;
+use JuanchoSL\Logger\Composers\TextComposer;
 use JuanchoSL\Logger\Debugger;
 use JuanchoSL\Logger\Logger;
 use JuanchoSL\Logger\Repositories\ScreenRepository;
@@ -19,7 +19,7 @@ class ReadScreenTextTest extends TestCase
 
     public function setUp(): void
     {
-        $composer = new PlainText;
+        $composer = new TextComposer;
         $composer->setTimeFormat("Y-m-d H:i:s T");
         $handler = new ScreenRepository();
         $handler->setComposer($composer);
@@ -38,21 +38,21 @@ class ReadScreenTextTest extends TestCase
     }
     public function testDebuggerFile()
     {
-        Debugger::getInstance()->setLogger('info', $this->logger)->getLogger('info')->info('This is an info', $_SERVER);
+        Debugger::init()->setLogger('info', $this->logger)->getLogger('info')->info('This is an info', $_SERVER);
         $content = ob_get_clean();
         $this->assertStringContainsString("This is an info", $content);
     }
 
     public function testTriggersDebugInit()
     {
-        $debugger = Debugger::getInstance()->setLogger('debug', $this->logger)->initFailuresHandler('debug');
+        $debugger = Debugger::init()->setLogger('debug', $this->logger)->initFailuresHandler('debug');
         trigger_error("This is a trigger");
         $content = ob_get_clean();
         $this->assertStringContainsString("This is a trigger", $content);
     }
     public function testTriggerErrorInit()
     {
-        $debugger = Debugger::getInstance()->setLogger('error', $this->logger)->initFailuresHandler('error');
+        $debugger = Debugger::init()->setLogger('error', $this->logger)->initFailuresHandler('error');
         trigger_error("This is a trigger", E_USER_ERROR);
         $content = ob_get_clean();
         $this->assertStringContainsString("This is a trigger", $content);
@@ -60,7 +60,7 @@ class ReadScreenTextTest extends TestCase
 
     public function testTriggerWarningSupressed()
     {
-        $debugger = Debugger::getInstance()->setLogger('error', $this->logger)->initFailuresHandler('error');
+        $debugger = Debugger::init()->setLogger('error', $this->logger)->initFailuresHandler('error');
         @trigger_error("This is a trigger", E_USER_WARNING);
         $content = ob_get_clean();
         $this->assertStringNotContainsString("This is a trigger", $content);
@@ -68,7 +68,7 @@ class ReadScreenTextTest extends TestCase
 
     public function testTriggerNoticeNotReported()
     {
-        $debugger = Debugger::getInstance()->setLogger('notice', $this->logger)->initFailuresHandler('notice', E_ALL ^ E_USER_NOTICE);
+        $debugger = Debugger::init()->setLogger('notice', $this->logger)->initFailuresHandler('notice', E_ALL ^ E_USER_NOTICE);
         @trigger_error("This is a trigger", E_USER_NOTICE);
         $content = ob_get_clean();
         $this->assertStringNotContainsString("This is a trigger", $content);

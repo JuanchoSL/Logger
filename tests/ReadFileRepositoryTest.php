@@ -22,7 +22,7 @@ class ReadFileRepositoryTest extends TestCase
         //$this->logs_dir = realpath(dirname(__DIR__, 1)) . DIRECTORY_SEPARATOR . 'logs';
         defined('TMPDIR') or define('TMPDIR', sys_get_temp_dir());
     
-        $this->logs_dir = TMPDIR . DIRECTORY_SEPARATOR . 'logs';
+        $this->logs_dir = TMPDIR;
         $this->log_name = 'test_logger.log';
         $this->full_path = implode(DIRECTORY_SEPARATOR, [$this->logs_dir, $this->log_name]);
         $this->assertDirectoryDoesNotExist($this->logs_dir);

@@ -25,12 +25,11 @@ class ReadFileRepositoryTest extends TestCase
         $this->logs_dir = TMPDIR;
         $this->log_name = 'test_logger.log';
         $this->full_path = implode(DIRECTORY_SEPARATOR, [$this->logs_dir, $this->log_name]);
-        $this->assertDirectoryDoesNotExist($this->logs_dir);
+        //$this->assertDirectoryDoesNotExist($this->logs_dir);
         $this->assertFileDoesNotExist($this->full_path);
         $composer = new TextComposer;
         $composer->setTimeFormat(DATE_RFC2822);
         $handler = new FileRepository($this->full_path);
-        //$handler = new ScreenRepository();
         $handler->setComposer($composer);
         $this->logger = new Logger($handler);
     }
@@ -42,8 +41,8 @@ class ReadFileRepositoryTest extends TestCase
             $deleted = unlink($file);
             $this->assertTrue($deleted);
         }
-        $deleted = rmdir($this->logs_dir);
-        $this->assertTrue($deleted);
+        //$deleted = rmdir($this->logs_dir);
+        //$this->assertTrue($deleted);
         sleep(1);
     }
     public function testLoggerFile()

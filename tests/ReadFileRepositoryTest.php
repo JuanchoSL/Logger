@@ -35,14 +35,16 @@ class ReadFileRepositoryTest extends TestCase
     }
     public function tearDown(): void
     {
-        //exit;
-        //return;
+        $deleted = unlink($this->full_path);
+        $this->assertTrue($deleted);
+        /*
         foreach (glob($this->logs_dir . DIRECTORY_SEPARATOR . '*') as $file) {
             $deleted = unlink($file);
             $this->assertTrue($deleted);
         }
-        //$deleted = rmdir($this->logs_dir);
-        //$this->assertTrue($deleted);
+        $deleted = rmdir($this->logs_dir);
+        $this->assertTrue($deleted);
+        */
         sleep(1);
     }
     public function testLoggerFile()

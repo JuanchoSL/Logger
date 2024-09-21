@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace JuanchoSL\Logger\Repositories;
+use JuanchoSL\Exceptions\NotModifiedException;
 
 class FileRepository extends AbstractRepository
 {
@@ -12,8 +13,11 @@ class FileRepository extends AbstractRepository
     public function __construct(string $full_path)
     {
         $this->full_path = $full_path;
-        if (!is_dir($dir = pathinfo($this->full_path, PATHINFO_DIRNAME))) {
-            mkdir($dir, 0666, true);
+        $dir_path = pathinfo($this->full_path, PATHINFO_DIRNAME);
+        if (!file_exists($dir_path)) {
+            if (!mkdir($dir_path, 0666, true)) {
+                throw new NotModifiedException("The directory '{$dir_path}' can not be created");
+            }
         }
     }
 

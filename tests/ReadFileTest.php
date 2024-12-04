@@ -14,7 +14,7 @@ class ReadFileTest extends TestCase
         $logs_dir = realpath(sys_get_temp_dir()) . DIRECTORY_SEPARATOR . 'logs';
         $log_name = 'test_logger.log';
         $full_path = implode(DIRECTORY_SEPARATOR, [$logs_dir, $log_name]);
-        $this->assertDirectoryNotExists($logs_dir);
+        $this->assertDirectoryDoesNotExist($logs_dir);
         $this->assertFileDoesNotExist($full_path);
         $logger = new Logger($full_path);
         $logger->warning('This is a warning');

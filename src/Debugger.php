@@ -58,7 +58,7 @@ class Debugger
         return $this;
     }
 
-    public static function getInstance(string $path = null): Debugger
+    public static function getInstance(?string $path = null): Debugger
     {
         if (empty(self::$instance)) {
             if (is_null($path)) {

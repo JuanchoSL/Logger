@@ -51,7 +51,7 @@ $logger->error("This is a message error");
 use JuanchoSL\Logger\Debugger;
 
 $debugger = Debugger::init();
-$debugger->setLogger('errors', $repository);
+$debugger->setLogger('errors', $logger);
 
 //.... your code ...
 
@@ -64,8 +64,8 @@ Debugger::get('errors')->error("This is a message error");
 use JuanchoSL\Logger\Debugger;
 
 $debugger = Debugger::init()
-    ->setLogger('errors', $repository)
-    ->setLogger('database', (new ModelRepository())->setComposer(new ObjectComposer));
+    ->setLogger('errors', $logger)
+    ->setLogger('database', new Logger((new ModelRepository())->setComposer(new ObjectComposer)));
 
 //.... your code ...
 
@@ -80,7 +80,7 @@ Debugger::get('database')?->debug($sql);
 ```php
 use JuanchoSL\Logger\Debugger;
 
-$debugger = Debugger::init()->setLogger('errors', $repository)->initFailuresHandler('errors', E_ALL^E_USER_NOTICE);
+$debugger = Debugger::init()->setLogger('errors', $logger)->initFailuresHandler('errors', E_ALL^E_USER_NOTICE);
 ```
 
 ### Use declared Loggers for inject as dependecy into Libraries
@@ -90,8 +90,8 @@ use JuanchoSL\Logger\Debugger;
 use JuanchoSL\Orm\Engine\Drivers\Mysqli;
 
 $debugger = Debugger::init()
-    ->setLogger('errors', $repository)
-    ->setLogger('database', (new ModelRepository())->setComposer(new ObjectComposer))
+    ->setLogger('errors', $logger)
+    ->setLogger('database', new Logger((new ModelRepository())->setComposer(new ObjectComposer)))
     ->initFailuresHandler('errors', E_ALL^E_USER_NOTICE);
 
 $database = new Mysqli($credentials);

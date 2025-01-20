@@ -18,10 +18,10 @@ class TextComposer extends AbstractComposer
         }
 
         $string = "[" . $this->time_mark->format($this->timeformat) . "] [" . $this->level . "] " . $message;
-        if (!empty ($this->context)) {
+        if (!empty($this->context)) {
             $string .= PHP_EOL . json_encode($this->context, JSON_PRETTY_PRINT);
         }
-        return $string;
+        return $string . PHP_EOL;
     }
 
 }

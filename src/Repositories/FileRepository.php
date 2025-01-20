@@ -15,7 +15,7 @@ class FileRepository extends AbstractRepository
         $this->full_path = $full_path;
         $dir_path = pathinfo($this->full_path, PATHINFO_DIRNAME);
         if (!file_exists($dir_path)) {
-            if (!mkdir($dir_path, 0666, true)) {
+            if (!mkdir($dir_path, 0766, true)) {
                 throw new NotModifiedException("The directory '{$dir_path}' can not be created");
             }
         }
@@ -24,6 +24,6 @@ class FileRepository extends AbstractRepository
     public function save(string $level, \Stringable|string $message, array $context = []): bool
     {
         $result = $this->getComposed($level, $message, $context);
-        return file_put_contents($this->full_path, $result . PHP_EOL, FILE_APPEND | LOCK_EX) !== false;
+        return file_put_contents($this->full_path, $result . PHP_EOL, FILE_APPEND) !== false;
     }
 }

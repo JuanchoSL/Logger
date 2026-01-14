@@ -11,14 +11,16 @@
     "authors": [
         {
             "name": "Juan Sánchez Lecegui",
-            "email": "JuanchoSL@hotmail.com",
-            "homepage": "https://github.com/JuanchoSL/"
+            "email": "Juan.Sanchez@tecnicosweb.com",
+            "homepage": "https://www.linkedin.com/in/juansanchezlecegui/",
+            "role": "Developer"
         }
     ],
     "require": {
         "php": "^8.1",
         "ext-mbstring": "*",
         "ext-fileinfo": "*",
+        "ext-json": "*",
         "psr/log": "3.0.*"
     },
     "require-dev": {

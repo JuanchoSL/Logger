@@ -24,12 +24,24 @@ composer update
 #### Create or use provided Data Composers, 
 Using composers, you can create and design your own messages structure, you can convert to String (for save into files) or can convert to Array or Objects in order to save into tables. 
 
+Actually we have availables 3 types of Composers:
+
+ - TextComposer
+ - ArrayComposer
+ - ObjectComposer
+
 ```php
 $composer = new TextComposer;
 ```
 
 #### Create or use a provided repository 
-Is the message destination, you can use the same Composer for send data to few Repositories, mantaining the same structure for all, create an instance in order to put the composer
+Is the message destination, you can use the same Composer for save data to few Repositories, mantaining the same structure for all, create an instance in order to put the composer
+
+Actually we have availables 3 Repositories
+
+- FileRepository (needs to provide a filepath)
+- ScreenRepository (do ECHO, converting iterable entities with print_r, json_encode, casting to string or performing a var_dump)
+- StreamRepository, as Screen, convert variables, capturing it and send to a stream, as a body from a PSR Response
 
 ```php
 $repository = new FileRepository(PATH . DIRECTORY_SEPARATOR . 'error.log');

@@ -1,4 +1,29 @@
-# Change Log Logger
+# Change Log - Logger
+
+## [1.1.3] - 2026-01-20
+
+### Added
+
+- Checked full compatibility with php 8.5
+- StreamRepository in order to send the composed data to a openned stream
+
+### Changed
+
+- Output buffer, for screen repository, use cast for stringable objects instead to use a vardump
+
+### Fixed
+
+- ScreenRepository add PRE tag in order to format output buffer when NO CLI SAPI is used
+
+## [1.1.2] - 2025-07-29
+
+### Added
+
+### Changed
+
+- fix composer stability
+
+### Fixed
 
 ## [1.1.1] - 2025-06-07
 

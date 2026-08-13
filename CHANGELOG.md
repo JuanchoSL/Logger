@@ -1,5 +1,19 @@
 # Change Log - Logger
 
+## [1.1.4] - 2026-08-13
+
+### Added
+
+- Checked full compatibility with php 8.6
+
+### Changed
+
+- Github actions verifying tests with multiples php versions
+
+### Fixed
+
+- Returns to 8.0 minimal compatibility into composer, adding phpunit 9.6 with 10.5 in order to choice the compatible version
+
 ## [1.1.3] - 2026-01-20
 
 ### Added

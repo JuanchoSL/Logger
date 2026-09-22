@@ -2,10 +2,12 @@
 
 namespace JuanchoSL\Logger\Repositories;
 
+use Stringable;
+
 class ScreenRepository extends AbstractRepository
 {
 
-    public function save(string $level, \Stringable|string $message, array $context = []): bool
+    public function save(string $level, Stringable|string $message, array $context = []): bool
     {
         $result = $this->getComposed($level, $message, $context);
         $data = '';
